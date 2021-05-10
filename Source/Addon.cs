@@ -21,6 +21,8 @@ namespace RimLua
 
             Log.Message("[RimLua] " + addonName + " addon was loaded");
             environment.Options.DebugPrint = s => Log.Message("["+addonName+"] " + s);
+            
+            // ModContentPack pack = new ModContentPack(dirInfo, "rimlua." + addonName, addonName, 1, addonName);
 
             string[] files = Directory.GetFiles(path, "*.lua");
             foreach (string file in files)
