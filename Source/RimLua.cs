@@ -24,7 +24,7 @@ namespace RimLua
             AddonManager manager = new AddonManager();
             manager.Initialize(addonsPath, corePath);
 
-            var harmony = new Harmony( "Fluffy.StuffedFloors" );
+            var harmony = new Harmony( "rorkh.rimlua" );
             harmony.PatchAll( Assembly.GetExecutingAssembly() );
 
             Log.Message("[RimLua] Loaded");
