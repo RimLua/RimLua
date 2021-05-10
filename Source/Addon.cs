@@ -3,6 +3,8 @@ using System.IO;
 using MoonSharp.Interpreter;
 using Verse;
 
+using System;
+
 namespace RimLua 
 {
     public class Addon {
