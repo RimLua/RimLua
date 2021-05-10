@@ -20,6 +20,7 @@ namespace RimLua
         public void Initialize(String addonsPath, String corePath) 
         {
             Script script = new Script();
+            script.Globals.RegisterModuleType<RimLuaFunctions>();
 
             string[] files = Directory.GetFiles(corePath, "*.lua");
             foreach (string file in files)
@@ -35,18 +36,14 @@ namespace RimLua
                 }
             }
 
-            //Table hookTable = script.Globals.Get("hook").Table;
-            //script.Call(hookTable.Get("Call"), "Initialize", 1);
-
             var directories = Directory.GetDirectories(addonsPath).Where(d => !isExcluded(_excludedDirectories, d));
             foreach (string directory in directories) {                
                 Addon addon = new Addon(directory, script);
                 addon.Load();
             }
 
-            //Log.Message(script.Globals.Get("hook").ToString());            
-            //Log.Message(script.Globals["hook"].ToString());
-            //script.Call(hook.Get("Call"), "Initialize", 1);
+            Table hookTable = script.Globals.Get("hook").Table;
+            script.Call(hookTable.Get("Call"), "Initialize");
         }
     }
 }
