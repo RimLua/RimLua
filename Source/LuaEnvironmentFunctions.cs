@@ -1,9 +1,11 @@
 using MoonSharp.Interpreter;
+using System;
 
 namespace RimLua {
     [MoonSharpModule]
-    public class RimLuaFunctions
+    public class LuaEnvironmentFunctions
     {
-        // TODO
+        
     }
 }
+
