@@ -8,21 +8,22 @@ using ICSharpCode.SharpZipLib.Zip;
 namespace RimLua 
 {
     public class Addon {
-        private string path;
+        public AddonInfo Info;
         private Script environment;
 
         public Addon(string addonPath, Script env) {
-            path = addonPath;
+            DirectoryInfo dirInfo = new DirectoryInfo(addonPath);
+            Info = new AddonInfo(addonPath, dirInfo.Name, true);
+
             environment = env;
         }
         public void Load() {
-            DirectoryInfo dirInfo = new DirectoryInfo(path);
-            string addonName = dirInfo.Name;  
-
-            Log.Message("[RimLua] " + addonName + " addon was loaded");
-            environment.Options.DebugPrint = s => Log.Message("["+addonName+"] " + s);
             
-            string[] files = Directory.GetFiles(path, "*.lua");
+
+            Log.Message("[RimLua] " + Info.Name + " addon was loaded");
+            environment.Options.DebugPrint = s => Log.Message("["+Info.Name+"] " + s);
+            
+            string[] files = Directory.GetFiles(Info.RootDir, "*.lua");
             foreach (string file in files)
             {
                 try
@@ -32,20 +33,20 @@ namespace RimLua
                 }
                 catch (ScriptRuntimeException ex)
                 {
-                    Log.Message("[RimLua " + addonName + "] An error occured! " + ex.DecoratedMessage);
+                    Log.Message("[RimLua " + Info.Name + "] An error occured! " + ex.DecoratedMessage);
                 }
             }
         }
 
         public void LoadZip() {
-            DirectoryInfo dirInfo = new DirectoryInfo(path);
-            string addonName = dirInfo.Name;  
+            DirectoryInfo dirInfo = new DirectoryInfo(Info.RootDir);
+            Info.Name = dirInfo.Name;  
 
-            Log.Message("[RimLua] " + addonName + " addon was loaded");
-            environment.Options.DebugPrint = s => Log.Message("["+addonName+"] " + s);
+            Log.Message("[RimLua] " + Info.Name + " addon was loaded");
+            environment.Options.DebugPrint = s => Log.Message("["+Info.Name+"] " + s);
             
-            var zip = new ZipInputStream(File.OpenRead(path));
-            var filestream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            var zip = new ZipInputStream(File.OpenRead(Info.RootDir));
+            var filestream = new FileStream(Info.RootDir, FileMode.Open, FileAccess.Read);
 
             ZipFile zipfile = new ZipFile(filestream);
             ZipEntry item;
@@ -59,7 +60,7 @@ namespace RimLua
                     environment.DoString(s.ReadToEnd());
                     }
                     catch (ScriptRuntimeException ex) {
-                        Log.Message("[RimLua " + addonName + "] An error occured! " + ex.DecoratedMessage);
+                        Log.Message("[RimLua " + Info.Name + "] An error occured! " + ex.DecoratedMessage);
                     }
                 }
             }

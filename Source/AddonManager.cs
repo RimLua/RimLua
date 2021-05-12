@@ -12,6 +12,7 @@ namespace RimLua
     {
         
         private static Script environment;
+        public static List<AddonInfo> InstalledAddons = new List<AddonInfo>();
 
         static bool isExcluded(List<string> exludedDirList, string target)
         {
@@ -22,6 +23,10 @@ namespace RimLua
             return environment;
         }
 
+        public static void RegisterAddon(AddonInfo info) {
+            InstalledAddons.Add(info);
+        }
+
         // TODO: Construction for path
         private static void LoadFolders(String path) {
             var directories = Directory.GetDirectories(path).Where(d => !isExcluded(new List<string>() { "core" }, d));
@@ -29,6 +34,8 @@ namespace RimLua
             foreach (string directory in directories) {                
                 Addon addon = new Addon(directory, environment);
                 addon.Load();
+
+                AddonManager.RegisterAddon(addon.Info);
             }
         }
 
@@ -38,7 +45,9 @@ namespace RimLua
             foreach (string file in files)
             {
                 Addon addon = new Addon(file, environment);
-                addon.LoadZip();                    
+                addon.LoadZip();
+
+                AddonManager.RegisterAddon(addon.Info);              
             }
         }
 
