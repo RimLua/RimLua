@@ -5,6 +5,8 @@ using System.IO;
 
 using HarmonyLib;
 
+using System.Collections.Generic;
+
 namespace RimLua
 {
     [StaticConstructorOnStartup]
