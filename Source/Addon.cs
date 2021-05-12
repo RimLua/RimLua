@@ -3,7 +3,7 @@ using System.IO;
 using MoonSharp.Interpreter;
 using Verse;
 
-using System;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace RimLua 
 {
@@ -22,8 +22,6 @@ namespace RimLua
             Log.Message("[RimLua] " + addonName + " addon was loaded");
             environment.Options.DebugPrint = s => Log.Message("["+addonName+"] " + s);
             
-            // ModContentPack pack = new ModContentPack(dirInfo, "rimlua." + addonName, addonName, 1, addonName);
-
             string[] files = Directory.GetFiles(path, "*.lua");
             foreach (string file in files)
             {
@@ -35,6 +33,34 @@ namespace RimLua
                 catch (ScriptRuntimeException ex)
                 {
                     Log.Message("[RimLua " + addonName + "] An error occured! " + ex.DecoratedMessage);
+                }
+            }
+        }
+
+        public void LoadZip() {
+            DirectoryInfo dirInfo = new DirectoryInfo(path);
+            string addonName = dirInfo.Name;  
+
+            Log.Message("[RimLua] " + addonName + " addon was loaded");
+            environment.Options.DebugPrint = s => Log.Message("["+addonName+"] " + s);
+            
+            var zip = new ZipInputStream(File.OpenRead(path));
+            var filestream = new FileStream(path, FileMode.Open, FileAccess.Read);
+
+            ZipFile zipfile = new ZipFile(filestream);
+            ZipEntry item;
+            
+            while ((item = zip.GetNextEntry()) != null)
+            {
+                using (StreamReader s = new StreamReader(zipfile.GetInputStream(item)))
+                {
+                    try
+	                {
+                    environment.DoString(s.ReadToEnd());
+                    }
+                    catch (ScriptRuntimeException ex) {
+                        Log.Message("[RimLua " + addonName + "] An error occured! " + ex.DecoratedMessage);
+                    }
                 }
             }
         }
