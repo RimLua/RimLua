@@ -10,7 +10,7 @@ namespace RimLua
 {
     public class AddonManager 
     {
-        private List<string> _excludedDirectories= new List<string>() { "core" };
+        
         private static Script environment;
 
         static bool isExcluded(List<string> exludedDirList, string target)
@@ -20,6 +20,26 @@ namespace RimLua
 
         public static Script GetEnvironment() {
             return environment;
+        }
+
+        // TODO: Construction for path
+        private static void LoadFolders(String path) {
+            var directories = Directory.GetDirectories(path).Where(d => !isExcluded(new List<string>() { "core" }, d));
+
+            foreach (string directory in directories) {                
+                Addon addon = new Addon(directory, environment);
+                addon.Load();
+            }
+        }
+
+        private static void LoadWithExtension(String path) {
+            string[] files = Directory.GetFiles(path, "*.rwa");
+
+            foreach (string file in files)
+            {
+                Addon addon = new Addon(file, environment);
+                addon.LoadZip();                    
+            }
         }
 
         public void Initialize(String addonsPath, String corePath) 
@@ -40,11 +60,9 @@ namespace RimLua
                 }
             }
 
-            var directories = Directory.GetDirectories(addonsPath).Where(d => !isExcluded(_excludedDirectories, d));
-            foreach (string directory in directories) {                
-                Addon addon = new Addon(directory, environment);
-                addon.Load();
-            }
+            // TODO: Better?
+            AddonManager.LoadFolders(addonsPath);
+            AddonManager.LoadWithExtension(addonsPath);
 
             Table hookTable = environment.Globals.Get("hook").Table;
             environment.Call(hookTable.Get("Call"), "Initialize");
