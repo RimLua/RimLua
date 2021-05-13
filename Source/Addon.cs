@@ -13,13 +13,11 @@ namespace RimLua
 
         public Addon(string addonPath, Script env) {
             DirectoryInfo dirInfo = new DirectoryInfo(addonPath);
-            Info = new AddonInfo(addonPath, dirInfo.Name, true);
+            Info = new AddonInfo(addonPath, Path.GetFileNameWithoutExtension(dirInfo.Name), true);
 
             environment = env;
         }
         public void Load() {
-            
-
             Log.Message("[RimLua] " + Info.Name + " addon was loaded");
             environment.Options.DebugPrint = s => Log.Message("["+Info.Name+"] " + s);
             
@@ -39,9 +37,6 @@ namespace RimLua
         }
 
         public void LoadZip() {
-            DirectoryInfo dirInfo = new DirectoryInfo(Info.RootDir);
-            Info.Name = dirInfo.Name;  
-
             Log.Message("[RimLua] " + Info.Name + " addon was loaded");
             environment.Options.DebugPrint = s => Log.Message("["+Info.Name+"] " + s);
             
